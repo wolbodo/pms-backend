@@ -100,7 +100,7 @@ fn login(login: JSON<Login>) -> Result<JSON<Value>, status::Custom<String>> {
   db_call!(
     "SELECT login(emailaddress := $1, password := $2);",
     &[&login.0.user, &login.0.password],
-    status::Custom(Status::InternalServerError, "Id not found (or no read access)".to_string())
+    status::Custom(Status::NotFound, "Id not found (or no read access)".to_string())
   )
 }
 
@@ -109,7 +109,7 @@ fn people_add(api: APIContext, person: JSON<Value>) -> Result<JSON<Value>, statu
   db_call!(
     "SELECT people_add(token := $1, data := $2);",
     &[&api.token, &person.0],
-    status::Custom(Status::InternalServerError, "Id not found (or no read access)".to_string())
+    status::Custom(Status::NotFound, "Id not found (or no read access)".to_string())
   )
 }
 
@@ -118,7 +118,7 @@ fn people_get(api: APIContext) -> Result<JSON<Value>, status::Custom<String>> {
   db_call!(
     "SELECT people_get(token := $1);",
     &[&api.token],
-    status::Custom(Status::InternalServerError, "Id not found (or no read access)".to_string())
+    status::Custom(Status::NotFound, "Id not found (or no read access)".to_string())
   )
 }
 
@@ -127,7 +127,7 @@ fn people_get_i(api: APIContext, id: i32) -> Result<JSON<Value>, status::Custom<
   db_call!(
     "SELECT people_get(token := $1, people_id := $2);",
     &[&api.token, &id],
-    status::Custom(Status::InternalServerError, "Id not found (or no read access)".to_string())
+    status::Custom(Status::NotFound, "Id not found (or no read access)".to_string())
   )
 }
 
@@ -136,7 +136,7 @@ fn people_set_i(api: APIContext, id: i32, person: JSON<Value>) -> Result<JSON<Va
   db_call!(
     "SELECT people_set(token := $1, people_id := $2, data := $3);",
     &[&api.token, &id, &person.0],
-    status::Custom(Status::InternalServerError, "Id not found (or no read access)".to_string())
+    status::Custom(Status::NotFound, "Id not found (or no read access)".to_string())
   )
 }
 
@@ -145,7 +145,7 @@ fn roles_add(api: APIContext, role: JSON<Value>) -> Result<JSON<Value>, status::
   db_call!(
     "SELECT roles_add(token := $1, data := $2);",
     &[&api.token, &role.0],
-    status::Custom(Status::InternalServerError, "Id not found (or no read access)".to_string())
+    status::Custom(Status::NotFound, "Id not found (or no read access)".to_string())
   )
 }
 
@@ -154,7 +154,7 @@ fn roles_get(api: APIContext) -> Result<JSON<Value>, status::Custom<String>> {
   db_call!(
     "SELECT roles_get(token := $1);",
     &[&api.token],
-    status::Custom(Status::InternalServerError, "Id not found (or no read access)".to_string())
+    status::Custom(Status::NotFound, "Id not found (or no read access)".to_string())
   )
 }
 
@@ -163,7 +163,7 @@ fn roles_get_i(api: APIContext, id: i32) -> Result<JSON<Value>, status::Custom<S
   db_call!(
     "SELECT roles_get(token := $1, roles_id := $2);",
     &[&api.token, &id],
-    status::Custom(Status::InternalServerError, "Id not found (or no read access)".to_string())
+    status::Custom(Status::NotFound, "Id not found (or no read access)".to_string())
   )
 }
 
@@ -172,7 +172,7 @@ fn roles_set(api: APIContext, id: i32, role: JSON<Value>) -> Result<JSON<Value>,
   db_call!(
     "SELECT roles_set(token := $1, roles_id := $2, data := $3);",
     &[&api.token, &id, &role.0],
-    status::Custom(Status::InternalServerError, "Id not found (or no read access)".to_string())
+    status::Custom(Status::NotFound, "Id not found (or no read access)".to_string())
   )
 }
 
@@ -181,7 +181,7 @@ fn permissions_get(api: APIContext) -> Result<JSON<Value>, status::Custom<String
   db_call!(
     "SELECT roles_permissions_get(token := $1);",
     &[&api.token],
-    status::Custom(Status::InternalServerError, "Id not found (or no read access)".to_string())
+    status::Custom(Status::NotFound, "Id not found (or no read access)".to_string())
   )
 }
 
@@ -190,7 +190,7 @@ fn fields_get(api: APIContext) -> Result<JSON<Value>, status::Custom<String>> {
   db_call!(
     "SELECT fields_get(token := $1);",
     &[&api.token],
-    status::Custom(Status::InternalServerError, "Id not found (or no read access)".to_string())
+    status::Custom(Status::NotFound, "Id not found (or no read access)".to_string())
   )
 }
 
@@ -199,7 +199,7 @@ fn fields_get_i(api: APIContext, table: String) -> Result<JSON<Value>, status::C
   db_call!(
     "SELECT fields_get(token := $1, ref_table := $2);",
     &[&api.token, &table],
-    status::Custom(Status::InternalServerError, "Id not found (or no read access)".to_string())
+    status::Custom(Status::NotFound, "Id not found (or no read access)".to_string())
   )
 }
 
@@ -223,13 +223,8 @@ fn password_forgot(forgot: JSON<PasswordForgot>) -> Result<JSON<Value>, status::
   db_call!(
     "SELECT password_forgot(user_email := $1);",
     &[&forgot.email],
-    status::Custom(Status::InternalServerError, "Id not found (or no read access)".to_string())
+    status::Custom(Status::MethodNotAllowed, "Id not found (or no read access)".to_string())
   )
-  // db_call!(
-    // "SELECT fields_set(token := $1, people_id := $2, data := $3);",
-    // &[&api.token, &id, &person.0],
-    // status::Custom(Status::InternalServerError, "Id not found (or no read access)".to_string())
-  // )
 }
 
 #[derive(Serialize, Deserialize)]
@@ -244,11 +239,9 @@ fn password_reset(reset: JSON<PasswordReset>) -> Result<JSON<Value>, status::Cus
   db_call!(
     "SELECT password_reset(reset_token := $1, new_password := $2);",
     &[&reset.token, &reset.password],
-    status::Custom(Status::InternalServerError, "Id not found (or no read access)".to_string())
+    status::Custom(Status::MethodNotAllowed, "Id not found (or no read access)".to_string())
   )
 }
-
-
 
 
 #[error(400)]
@@ -261,6 +254,13 @@ fn unauthorized() -> JSON<Value> {
   JSON(Value::from_str("{\"error\":\"No Authorization header found\"}").unwrap())
 }
 
+#[error(404)]
+fn notfound() -> JSON<Value> { 
+  JSON(Value::from_str("{\"error\":\"Resource not found\"}").unwrap())
+}
+
+
+
 fn main() {
     rocket::ignite().mount("/", routes![
       login,
@@ -271,6 +271,10 @@ fn main() {
       password_forgot, password_reset,
 
     ])
-    .catch(errors![badrequest, unauthorized])
+    .catch(errors![
+      badrequest,
+      unauthorized,
+      notfound
+    ])
     .launch();
 }
